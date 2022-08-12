@@ -4,9 +4,9 @@ pub contract FlowInteractionAudit {
   pub event AuditRevoked(templateId: String, auditor: Address)
   pub event AuditorCreated()
 
-  pub let FlowInteractionAuditManagerStoragePath: StoragePath = /storage/flowInteractionAuditManagerStoragePath
-  pub let FlowInteractionAuditManagerPublicPath: PublicPath = /public/flowInteractionAuditManagerPublicPath
-  pub let FlowInteractionAuditManagerPrivatePath: PrivatePath = /private/flowInteractionAuditManagerPrivatePath
+  pub let FlowInteractionAuditManagerStoragePath: StoragePath
+  pub let FlowInteractionAuditManagerPublicPath: PublicPath
+  pub let FlowInteractionAuditManagerPrivatePath: PrivatePath
 
   pub resource interface FlowInteractionAuditManagerPublic {
     pub fun getAudits(): [String]
@@ -19,7 +19,7 @@ pub contract FlowInteractionAudit {
   }
 
   pub resource FlowInteractionAuditManager: FlowInteractionAuditManagerPublic, FlowInteractionAuditManagerPrivate {
-    private var audits: {String:Bool}
+    access(self) var audits: {String:Bool}
     
     init() {
       self.audits = {}
@@ -36,12 +36,12 @@ pub contract FlowInteractionAudit {
   
     pub fun addAudit(templateId: String) {
       self.audits.insert(key: templateId, true)
-      emit AuditAdded(templateId: templateId, auditor: self.owner?.address)
+      emit AuditAdded(templateId: templateId, auditor: self.owner?.address!)
     }
 
     pub fun revokeAudit(templateId: String) {
       self.audits.remove(key: templateId)
-      emit AuditRevoked(templateId: templateId, auditor: self.owner?.address)
+      emit AuditRevoked(templateId: templateId, auditor: self.owner?.address!)
     }
   }
 
@@ -50,6 +50,8 @@ pub contract FlowInteractionAudit {
   }
 
   init() { 
-
+    self.FlowInteractionAuditManagerStoragePath = /storage/flowInteractionAuditManagerStoragePath
+    self.FlowInteractionAuditManagerPublicPath = /public/flowInteractionAuditManagerPublicPath
+    self.FlowInteractionAuditManagerPrivatePath = /private/flowInteractionAuditManagerPrivatePath
   }
 }
